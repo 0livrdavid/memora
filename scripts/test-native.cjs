@@ -17,6 +17,6 @@ const { CaptureBridge } = require('../src/native.cjs');
     const after = await bridge.request('list');
     assert.ok(!after.devices.some(device => device.uid === capture.uid), 'entrada temporária removida');
     await assert.rejects(bridge.request('start', 'dispositivo-inexistente'), /saída física/);
-    console.log(JSON.stringify({ passed: true, source: source.label, capturePublished: true, includesDiscord: true, excludesSonora: true, playbackUnmuted: true, defaultUnchanged: true, captureRemoved: true, invalidDeviceBlocked: true }, null, 2));
+    console.log(JSON.stringify({ passed: true, source: source.label, capturePublished: true, includesDiscord: true, excludesMemora: true, playbackUnmuted: true, defaultUnchanged: true, captureRemoved: true, invalidDeviceBlocked: true }, null, 2));
   } finally { bridge.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -34,4 +34,4 @@ class PCMRecorder extends AudioWorkletProcessor {
     return true;
   }
 }
-registerProcessor('sonora-pcm', PCMRecorder);
+registerProcessor('memora-pcm', PCMRecorder);

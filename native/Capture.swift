@@ -57,6 +57,7 @@ func inventory() throws -> [String: Any] {
     }
     return ["devices": list, "supported": ProcessInfo.processInfo.operatingSystemVersion.majorVersion >= 26]
 }
+// Persistent CoreAudio namespace and lease must interoperate with existing installations.
 let stableCaptureUID = "local.sonora.capture"
 var tap = AudioObjectID(0), aggregate = AudioObjectID(0)
 var activeSource = "", activeGeneration = ""
@@ -119,7 +120,8 @@ func reclaimOwned() throws -> [String] {
             guard proc_pidpath(pid, &path, UInt32(path.count)) > 0 else { throw Failure("Não foi possível verificar o processo de uma captura anterior.") }
             // PIDs are recycled across reboots; an unrelated live process is not a capture owner.
             let executable = String(cString: path)
-            if URL(fileURLWithPath: executable).lastPathComponent == "sonora-capture" {
+            // Recognize active helpers from both current and legacy builds.
+            if ["memora-capture", "sonora-capture"].contains(URL(fileURLWithPath: executable).lastPathComponent) {
                 throw Failure("Uma captura anterior ainda tem processo ativo. Encerre esse Memora antes de tentar novamente.")
             }
         }

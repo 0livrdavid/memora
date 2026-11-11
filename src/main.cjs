@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, session, nativeTheme, dialog, shell, globalShortcut } = require('electron');
 const path=require('node:path'),fs=require('node:fs');
 const {pathToFileURL}=require('node:url');
+const {environmentValue}=require('./compatibility.cjs');
 const {CaptureBridge}=require('./native.cjs');
 const {RecordingStore,privateJSON}=require('./recordings.cjs');
 const {parseRequest,performRequest}=require('./transcribe-request.cjs');
@@ -13,8 +14,8 @@ let mcp,mcpStatus={running:false};
 const {Preferences}=require('./preferences.cjs');
 const {MonitorStatus}=require('./monitor-status.cjs');
 process.umask(0o077);app.setName('Memora');
-const smoke=Boolean(process.env.SONORA_SMOKE);
-const base=process.env.SONORA_DATA||path.join(__dirname,'../.local');
+const smoke=Boolean(environmentValue('MEMORA_SMOKE'));
+const base=environmentValue('MEMORA_DATA')||path.join(__dirname,'../.local');
 app.setPath('userData',smoke?path.join(base,'smoke-profile'):base);
 const page=name=>pathToFileURL(path.join(__dirname,name)).href;
 const capture=new CaptureBridge();
@@ -148,10 +149,10 @@ if(!app.requestSingleInstanceLock())app.quit();else{
    await panel.webContents.executeJavaScript("document.getElementById('transcription-profile').textContent='Transcrição automática · large-v3 + falantes';document.getElementById('record-message').textContent='Transcrição pronta.';");
    await panel.webContents.executeJavaScript("document.getElementById('latest-rename').click()");panel.webContents.sendInputEvent({type:'keyDown',keyCode:'Escape'});panel.webContents.sendInputEvent({type:'keyUp',keyCode:'Escape'});await new Promise(r=>setTimeout(r,100));report.renameEscape=panel.isVisible()&&await panel.webContents.executeJavaScript("document.getElementById('latest-rename-form').hidden&&document.activeElement.id==='latest-rename'");panel.webContents.sendInputEvent({type:'keyDown',keyCode:'Escape'});panel.webContents.sendInputEvent({type:'keyUp',keyCode:'Escape'});await new Promise(r=>setTimeout(r,100));report.panelEscape=!panel.isVisible();showPanel();
    console.log('SMOKE_STAGE meter');report.meter=await panel.webContents.executeJavaScript('window.runMeterDiagnostics()',true);
-   if(process.env.SONORA_RECORD_TEST){report.recording=await panel.webContents.executeJavaScript('window.runRecordingDiagnostics()',true);report.nextRecording=await runInterruptionSmoke();}
+   if(environmentValue('MEMORA_RECORD_TEST')){report.recording=await panel.webContents.executeJavaScript('window.runRecordingDiagnostics()',true);report.nextRecording=await runInterruptionSmoke();}
    console.log('SMOKE_STAGE processing');report.processing=await panel.webContents.executeJavaScript('window.runProcessingDiagnostics()',true);await new Promise(r=>setTimeout(r,120));fs.writeFileSync(path.join(app.getPath('userData'),'processing.png'),(await panel.webContents.capturePage()).toPNG());await panel.webContents.executeJavaScript("document.getElementById('processing-details').open=true;document.getElementById('preview-details').open=true");await new Promise(r=>setTimeout(r,120));fs.writeFileSync(path.join(app.getPath('userData'),'processing-expanded.png'),(await panel.webContents.capturePage()).toPNG());await panel.webContents.executeJavaScript('window.endProcessingDiagnostics()');
    showPanel();const original=panel.isVisible();panel.emit('blur');report.popover={startupHidden,wasVisible:original,closesOutside:!panel.isVisible(),allSpaces:panel.isVisibleOnAllWorkspaces()};panel.removeListener('blur',closeOnBlur);showPanel();await new Promise(r=>setTimeout(r,150));
-   if(process.env.SONORA_RECORD_TEST){report.feedback=await notice.webContents.executeJavaScript("document.getElementById('feedback-title').textContent");fs.writeFileSync(path.join(app.getPath('userData'),'feedback.png'),(await notice.webContents.capturePage()).toPNG());}
+   if(environmentValue('MEMORA_RECORD_TEST')){report.feedback=await notice.webContents.executeJavaScript("document.getElementById('feedback-title').textContent");fs.writeFileSync(path.join(app.getPath('userData'),'feedback.png'),(await notice.webContents.capturePage()).toPNG());}
    fs.writeFileSync(path.join(app.getPath('userData'),'panel.png'),(await panel.webContents.capturePage()).toPNG());
    console.log('SMOKE_STAGE workspaces');report.workspaces=await runWorkspaceSmoke();
    await openReader(id);await reader.webContents.executeJavaScript("new Promise(resolve=>{const poll=()=>window.readerReady?resolve():setTimeout(poll,20);poll();})");report.reader=await reader.webContents.executeJavaScript('window.readerDiagnostics()');fs.writeFileSync(path.join(app.getPath('userData'),'reader.png'),(await reader.webContents.capturePage()).toPNG());report.readerWindow={maximized:reader.isMaximized(),fullscreen:reader.isFullScreen(),allSpaces:reader.isVisibleOnAllWorkspaces(),minimizable:reader.isMinimizable(),dock:app.dock?.isVisible(),bounds:reader.getBounds(),workArea:screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea};
@@ -216,7 +217,7 @@ async function runWorkspaceSmoke(){
  const settings=await openWorkspace('settings');await waitReady(settings);const settingsResult=await settings.webContents.executeJavaScript('window.exerciseWorkspace()',true);await snap(settings,'settings.png');
  settings.setSize(620,600);await snap(settings,'settings-narrow.png');settingsResult.narrow=await settings.webContents.executeJavaScript('window.workspaceDiagnostics()');
  await settings.webContents.executeJavaScript("document.getElementById('cleanup-settings').open=true;document.getElementById('cleanup-settings').scrollIntoView()");await snap(settings,'cleanup.png');
- settingsResult.noCaptureAPI=await settings.webContents.executeJavaScript("!window.sonora&&!('recordBegin' in window.memora)&&!('recordCaptureStart' in window.memora)");
+ settingsResult.noCaptureAPI=await settings.webContents.executeJavaScript("!window.memoraRecording&&!('recordBegin' in window.memora)&&!('recordCaptureStart' in window.memora)");
  history.minimize();await new Promise(resolve=>setTimeout(resolve,200));await openWorkspace('history');historyResult.restore=!history.isMinimized()&&history.isVisible();
  const closed=Promise.all([settings,history].map(win=>new Promise(resolve=>{win.once('closed',resolve);win.close();})));await closed;const reopened=await openWorkspace('history');await waitReady(reopened);historyResult.reopens=reopened!==history;reopened.close();
  return {history:historyResult,settings:settingsResult,passed:historyResult.passed&&historyResult.readerOpened&&historyResult.singleWindow&&historyResult.normalWindow&&historyResult.narrow.noOverflow&&historyResult.restore&&historyResult.reopens&&settingsResult.passed&&settingsResult.narrow.noOverflow&&settingsResult.noCaptureAPI,realCapture:false};

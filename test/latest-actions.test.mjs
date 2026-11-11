@@ -2,7 +2,7 @@ import {test} from 'node:test';import assert from 'node:assert/strict';import fs
 function ui(){
  const nodes={},calls=[];const $=id=>nodes[id]??=( {value:'',hidden:true,setAttribute(k,v){this[k]=v},focus(){this.focused=true}} );$('record-history').value='older';
  const scope={$,config:{latest:{id:'latest',title:'Última',hasTranscript:true}},selectedSession:{id:'older'},busy:false,current:null,latestRenameId:null,
-  window:{sonora:{recordReader:async id=>calls.push(['view',id]),recordRename:async(id,title)=>calls.push(['rename',id,title])}},setup:async id=>calls.push(['setup',id]),message:text=>calls.push(['message',text]),controls(){}};
+  window:{memoraRecording:{recordReader:async id=>calls.push(['view',id]),recordRename:async(id,title)=>calls.push(['rename',id,title])}},setup:async id=>calls.push(['setup',id]),message:text=>calls.push(['message',text]),controls(){}};
  const code=fs.readFileSync(new URL('../src/recording.js',import.meta.url),'utf8').split('\n').filter(s=>/^\$\('latest-(view|rename|rename-cancel|rename-form)'\)\.(onclick|onsubmit)=/.test(s)).join('\n');
  assert.equal(code.split('\n').length,4);vm.runInNewContext(code,scope);return {scope,nodes,$,calls};
 }

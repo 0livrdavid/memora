@@ -9,7 +9,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { RecordingStore } = require('../src/recordings.cjs');
 function fixture(t, spawn) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'sonora-test-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'memora-test-'));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const store = new RecordingStore(path.join(directory, 'recordings'), { spawn });
   const model = path.join(directory, 'modelo com espaço.bin'); fs.writeFileSync(model, 'fixture');

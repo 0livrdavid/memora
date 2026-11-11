@@ -42,7 +42,7 @@ Os modelos e runtimes não são distribuídos neste repositório. Consulte as li
 Depois de obter o código e preparar os requisitos, entre na pasta do projeto. Indique o executável de um Electron existente ou disponibilize-o em `node_modules/electron/dist/Electron.app`:
 
 ```sh
-export SONORA_ELECTRON="/caminho/para/Electron.app/Contents/MacOS/Electron"
+export MEMORA_ELECTRON="/caminho/para/Electron.app/Contents/MacOS/Electron"
 npm start
 ```
 
@@ -69,7 +69,9 @@ Para diagnósticos adicionais, `npm run smoke` e `npm run smoke:recording` usam 
 | `assets/` | Identidade visual |
 | `licenses/` | Avisos e licenças de componentes de terceiros |
 
-O nome interno `sonora` e as variáveis `SONORA_*` são mantidos por compatibilidade. O nome do aplicativo é **Memora**.
+O pacote, a interface e os comandos de desenvolvimento usam **Memora** e `MEMORA_*`. Os nomes antigos das variáveis são aceitos apenas como fallback em `src/compatibility.cjs`.
+
+Os identificadores persistentes de bundle, CoreAudio e lock são preservados para manter a identidade de permissões do macOS, reconhecer capturas existentes e impedir capturas concorrentes entre versões. O helper também reconhece processos de versões anteriores. Não renomeie esses identificadores sem uma migração explícita.
 
 ## Estado desta versão
 

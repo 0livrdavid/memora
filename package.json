@@ -1,5 +1,5 @@
 {
-  "name": "sonora",
+  "name": "memora",
   "productName": "Memora",
   "version": "0.1.0",
   "private": true,
@@ -11,7 +11,7 @@
     "test": "node --test test/*.test.mjs",
     "smoke": "node scripts/start.mjs --smoke",
     "test:native": "node scripts/build-native.mjs && node scripts/test-native.cjs",
-    "smoke:recording": "SONORA_RECORD_TEST=1 node scripts/start.mjs --smoke",
+    "smoke:recording": "MEMORA_RECORD_TEST=1 node scripts/start.mjs --smoke",
     "build:app": "node scripts/build-app.mjs",
     "start:direct": "node scripts/start.mjs"
   },

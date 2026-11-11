@@ -1,6 +1,7 @@
 import {sourceBuild,writeBuildStamp} from './source-build.mjs';
 import {buildIcon,applyAppIcon,iconMatches} from './app-icon.mjs';
 import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';
+// Persistent macOS identity: changing this can reset existing permissions and build receipts.
 export const APP_ID='local.sonora.memora';
 export function bundlePaths(root){return {root,bundle:path.join(root,'.local/macos/Memora.app'),entry:path.join(root,'src/main.cjs'),data:path.join(root,'.local')};}
 export function preferredBundle(root,installed='/Applications/Memora.app'){

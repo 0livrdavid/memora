@@ -5,7 +5,7 @@ class CaptureBridge {
   constructor({spawnChild=spawn,closeTimeout=2500}={}) { this.spawnChild=spawnChild;this.closeTimeout=closeTimeout;this.child=null;this.closing=null;this.serial=0;this.pending=new Map();this.onExit=()=>{}; }
   launch() {
     if(this.child)return;
-    const child=this.spawnChild(path.join(__dirname,'../.local/sonora-capture'),[],{stdio:['pipe','pipe','pipe']});
+    const child=this.spawnChild(path.join(__dirname,'../.local/memora-capture'),[],{stdio:['pipe','pipe','pipe']});
     this.child=child;
     child.stderr.on('data',chunk=>console.error('CoreAudio:',chunk.toString().slice(0,1000)));
     child.stdin.on('error',()=>{});

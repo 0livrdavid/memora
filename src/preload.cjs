@@ -1,6 +1,6 @@
 const {contextBridge,ipcRenderer}=require('electron');
 const invoke=(name,...args)=>ipcRenderer.invoke(`record:${name}`,...args);
-contextBridge.exposeInMainWorld('sonora',{
+contextBridge.exposeInMainWorld('memoraRecording',{
  openWindow:view=>ipcRenderer.invoke('workspace:open',view),workspaceState:value=>ipcRenderer.send('panel:state',value),onRefresh:fn=>ipcRenderer.on('record:refresh',fn),
  recordMark:()=>invoke('mark-moment'),onMarkerAdded:fn=>ipcRenderer.on('record:marker-added',(_event,value)=>fn(value)),
  recordInfo:()=>invoke('info'),preferences:update=>invoke('preferences',update),
