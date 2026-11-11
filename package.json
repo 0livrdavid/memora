@@ -1,0 +1,21 @@
+{
+  "name": "sonora",
+  "productName": "Memora",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Gravação manual e transcrição local com Whisper na barra de menus do macOS",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "node scripts/start-app.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test test/*.test.mjs",
+    "smoke": "node scripts/start.mjs --smoke",
+    "test:native": "node scripts/build-native.mjs && node scripts/test-native.cjs",
+    "smoke:recording": "SONORA_RECORD_TEST=1 node scripts/start.mjs --smoke",
+    "build:app": "node scripts/build-app.mjs",
+    "start:direct": "node scripts/start.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

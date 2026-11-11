@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; media-src blob:; object-src 'none'; base-uri 'none'">
+ <title>Memora · Transcrição</title>
+ <link rel="stylesheet" href="reader.css">
+</head>
+<body>
+ <header><strong>Memora</strong><button id="reader-close" type="button">Fechar</button></header>
+ <main>
+  <div class="reader-heading"><h1 id="reader-title">Carregando…</h1><button id="reader-rename" type="button" aria-controls="reader-rename-form" aria-expanded="false" disabled>Renomear reunião</button></div>
+  <form id="reader-rename-form" hidden>
+   <label for="reader-rename-title">Nome da reunião</label>
+   <div class="rename-actions"><input id="reader-rename-title" aria-describedby="reader-rename-state" maxlength="160" required autocomplete="off"><button id="reader-rename-save" type="submit">Salvar</button><button id="reader-rename-cancel" type="button">Cancelar</button></div>
+  </form>
+  <p id="reader-rename-state" role="status" aria-live="polite" hidden></p>
+  <details id="reader-info">
+   <summary id="reader-info-summary" title="Informações da transcrição">
+    <span id="reader-meta"></span><span class="info-icon" aria-hidden="true">i</span><span id="reader-warning-indicator" class="review-badge" hidden>Revisar</span>
+   </summary>
+   <div class="reader-info-content">
+    <p id="reader-details-meta"></p>
+    <p class="timing-note">Os tempos originais vêm do Whisper. “~” indica horário aproximado de uma frase dentro do trecho.</p>
+    <p id="playback-note"></p>
+    <p>Transcrição local. A origem Microfone ou Computador não identifica uma pessoa. Nomes são salvos apenas nesta gravação; trechos incertos e interrupções são preservados.</p>
+    <p id="reader-warning" role="status" hidden></p>
+   </div>
+  </details>
+  <section id="playback" aria-label="Reprodução do trecho selecionado">
+   <div class="playback-controls"><audio id="phrase-audio" aria-label="Áudio do trecho selecionado" controls preload="none"></audio><button id="playback-stop" type="button" aria-label="Parar reprodução" title="Parar reprodução" hidden>■</button></div>
+   <p id="playback-state" role="status" aria-live="polite"></p>
+  </section>
+  <details id="marker-settings"><summary>Marcadores <span id="marker-count" class="count">0</span></summary><p class="timing-note">Selecione um horário para ir ao trecho. O áudio só toca ao pressionar Ouvir.</p><div id="marker-list"></div><p id="marker-state" role="status"></p></details>
+  <details id="speaker-settings">
+   <summary id="speaker-summary">Falantes <span id="speaker-count" class="count">0</span></summary>
+   <p id="speaker-note" class="timing-note">Ouça uma amostra antes de confirmar o nome. Os nomes valem apenas para esta gravação.</p>
+   <p id="speaker-empty" class="timing-note" hidden></p>
+   <div id="speaker-list"></div><p id="speaker-state" role="status"></p>
+  </details>
+  <div id="reader-content" aria-live="polite"></div>
+  <p id="reader-error" role="alert" hidden></p>
+ </main>
+ <script type="module" src="reader.js"></script>
+</body>
+</html>

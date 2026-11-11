@@ -1,0 +1,8 @@
+// Owns only a live level graph. No PCM queue, files, session or transcription API.
+export class LevelMonitor {
+ constructor(open,{levels=()=>{},state=()=>{},setTimer=(fn,delay)=>setInterval(fn,delay),clearTimer=id=>clearInterval(id)}={}){this.open=open;this.levels=levels;this.state=state;this.setTimer=setTimer;this.clearTimer=clearTimer;this.revision=0;this.queue=Promise.resolve();this.session=null;this.timer=null;}
+ snapshot(){return {active:Boolean(this.session),revision:this.revision,metrics:this.session?.diagnostics?.()||null};}
+ async dispose(){if(this.timer!==null)this.clearTimer(this.timer);this.timer=null;const session=this.session;this.session=null;if(session)await session.close();this.levels({microphone:0,computer:0});}
+ start(selection){const revision=++this.revision;this.queue=this.queue.catch(()=>{}).then(async()=>{await this.dispose();if(revision!==this.revision)return;try{const session=await this.open(selection);if(revision!==this.revision){await session.close();return;}this.session=session;let lastStatus=session.message||'Somente medição · sem salvar';this.state(lastStatus);this.timer=this.setTimer(()=>{try{this.levels(session.read());const status=session.status?.();if(status&&status!==lastStatus){lastStatus=status;this.state(status);}}catch(error){this.state('Medição indisponível: '+error.message);void this.stop();}},100);}catch(error){if(revision===this.revision){await this.dispose();this.state('Medição indisponível: '+error.message);}}});return this.queue;}
+ stop(){++this.revision;this.queue=this.queue.catch(()=>{}).then(()=>this.dispose());return this.queue;}
+}
